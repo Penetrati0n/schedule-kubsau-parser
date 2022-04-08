@@ -1,6 +1,6 @@
 import re
 
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from bs4 import BeautifulSoup, Tag
 
 class ParseService():
@@ -139,14 +139,14 @@ class ParseService():
         # region Parse current lesson
         current_day_info = ParseService.parse_current_day(html_text)
         lessons = current_day_info['lessons']
-        current_datetime = datetime.now()
+        current_datetime = datetime.utcnow() + timedelta(hours=3)
         current_time = time(current_datetime.hour, current_datetime.minute)
         current_lesson = {}
         for i in range(len(lessons) - 1):
             if i == 0 and current_time < lessons[i]['time']['from_time']:
                 current_lesson = lessons[i]
                 break
-            elif lessons[i]['time']['from_time'] <= current_time < lessons[i + 1]['time']['to_time']:
+            elif lessons[i]['time']['from_time'] <= current_time < lessons[i + 1]['time']['from_time']:
                 current_lesson = lessons[i]
                 break
         if not current_lesson and lessons:
